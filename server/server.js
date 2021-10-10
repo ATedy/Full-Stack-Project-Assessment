@@ -1,7 +1,9 @@
 const express = require("express");
 const app = express();
 const port = 5000;
-
+import {Pool} from "pg";
+require("dotenv").config();
+let config;
 const cors = require("cors");
 
 app.use(cors());
@@ -13,6 +15,28 @@ app.use(express.urlencoded({extended: true}));
 // Store and retrieve your videos from here
 // If you want, you can copy "exampleresponse.json" into here to have some data to work with
 const movies = require("./movieData.json");
+
+//heroku
+if (process.env.DATABASE_URL) {
+  config = {
+    connectionString: process.env.DATABASE_URL,
+    connectionTimeoutMillis: 5000,
+    ssl: {
+      rejectUnauthorized: false,
+    },
+  };
+} else {
+  // local
+
+  config = {
+    user: process.env.DB_USER,
+    host: process.env.DB_HOST,
+    database: "qadata",
+    password: process.env.DB_PASS,
+    port: 5432,
+  };
+}
+const pool = new Pool(config);
 
 // post
 app.post("/", function (request, response) {
