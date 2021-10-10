@@ -1,7 +1,8 @@
 const express = require("express");
 const app = express();
 const port = 5000;
-import {Pool} from "pg";
+// import {Pool} from "pg";
+const Pool = require("pg").Pool;
 require("dotenv").config();
 let config;
 const cors = require("cors");
@@ -31,8 +32,8 @@ if (process.env.DATABASE_URL) {
   config = {
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
-    database: "qadata",
-    password: process.env.DB_PASS,
+    database: "movie_list",
+    password: 87654321,
     port: 5432,
   };
 }
@@ -69,29 +70,31 @@ app.post("/", function (request, response) {
 });
 
 // GET "/"
-
-app.get("/", function (request, response) {
-  let order = request.query.order;
+app.get("/", function (req, res) {
+  pool
+    .query("SELECT * FROM movies")
+    .then((result) => res.json(result.rows))
+    .catch((e) => console.error(e));
 
   // if no order value given it wil set it to desc as default
-  if (order === undefined) {
-    order = "desc";
-  }
+  // if (order === undefined) {
+  //   order = "desc";
+  // }
 
-  order = order.toLowerCase();
-  if (order === "asc") {
-    movies.sort(function (a, b) {
-      0;
-      return parseInt(a.rating) - parseInt(b.rating);
-    });
-    console.log(movies);
-    return response.send(movies);
-  } else if (order === "desc") {
-    movies.sort(function (a, b) {
-      return parseInt(b.rating) - parseInt(a.rating);
-    });
-    return response.send(movies);
-  }
+  // order = order.toLowerCase();
+  // if (order === "asc") {
+  //   movies.sort(function (a, b) {
+  //     0;
+  //     return parseInt(a.rating) - parseInt(b.rating);
+  //   });
+  //   console.log(movies);
+  //   return response.send(movies);
+  // } else if (order === "desc") {
+  //   movies.sort(function (a, b) {
+  //     return parseInt(b.rating) - parseInt(a.rating);
+  //   });
+  //   return response.send(movies);
+  // }
 });
 
 app.delete("/:id", (request, response) => {
